@@ -47,7 +47,7 @@ class MovieCommands(commands.Cog):
         embed_filme.add_field(name='Duração:', value=movie['duracao'])
         embed_filme.add_field(name='Adicionado por:', value=nickname)
 
-        Logger.log_add(user=nickname, name=movie_name)
+        Logger.log_add(user=nickname, movie=movie_name)
 
         await ctx.send(embed=embed_filme)
 
@@ -93,7 +93,7 @@ class MovieCommands(commands.Cog):
             return
         
         delete_movie(movie)
-        Logger.log_delete(movie=movie_name, user=nickname)
+        Logger.log_delete(user=nickname, movie=movie_name)
 
         await ctx.send(embed=success_embed(f'O filme {movie_name} foi deletado por {nickname} com sucesso!'))
 
