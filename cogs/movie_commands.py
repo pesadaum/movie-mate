@@ -4,6 +4,7 @@ from utils.helper_functions import check_message, formata_lista
 from utils.embeds import send_error_embed, success_embed, info_embed, warning_embed
 from utils.pagination_view import PaginationView
 from utils.film_selection import FilmSelectionView
+from utils.logger import Logger
 from api.movie_api import fetch_movie_data
 from sqlalchemy.orm import Session
 
@@ -46,6 +47,8 @@ class MovieCommands(commands.Cog):
         embed_filme.add_field(name='Duração:', value=movie['duracao'])
         embed_filme.add_field(name='Adicionado por:', value=nickname)
 
+        Logger.log_add(user=nickname, name=movie_name)
+
         await ctx.send(embed=embed_filme)
 
     @commands.command(name='listar', brief='Lista todos os filmes adicionados')
@@ -83,13 +86,16 @@ class MovieCommands(commands.Cog):
     async def deletar_filme(self, ctx: commands.Context, *, movie_name: str):
         movie = get_movie_by_name(movie_name)
 
+        nickname = ctx.author.nick if ctx.author.nick else ctx.author.name
+        
         if not movie:
             await ctx.send(embed=send_error_embed(f'Não foi possível deletar o filme {movie_name}, pois ele não foi adicionado.'))
             return
         
         delete_movie(movie)
+        Logger.log_delete(movie=movie_name, user=nickname)
 
-        await ctx.send(embed=success_embed(f'O filme {movie_name} foi deletado com sucesso!'))
+        await ctx.send(embed=success_embed(f'O filme {movie_name} foi deletado por {nickname} com sucesso!'))
 
     @commands.command(name='sortear', brief='Sorteia um filme da lista')
     async def sortear_filme(self, ctx: commands.Context):
